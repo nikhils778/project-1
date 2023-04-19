@@ -8,10 +8,6 @@ if(!isset($_SESSION["s_name"]))
 
 
 
-
-
-
-
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -26,135 +22,122 @@ if(!isset($_SESSION["s_name"]))
 <body>
 
 <div class="header">	
-<div class="wrap"> 
-	<div class="header-bot">
-		 <div class="logo">
-			 <a href="index.html"><img src="images/logo.png" alt="" style="width:450px; height: 160px;"></a>
-		 </div>
-		 
-		 
-		 <div class="cart">
-			
-           <div>
-             <h3> Welcome <?=$_SESSION['s_name'];?> !! </h3>
-		 </div>
+    <div class="wrap"> 
+        <div class="header-bot">
+            <div class="logo">
+                <a href="index.html"><img src="images/logo.png" alt="" style="width:450px; height: 160px;"></a>
+            </div>
             
-		    <div class="menu-main">
-		    
-			   <ul class="dc_css3_menu">
-					<li class="active"><a href="indexlogin.php">Home</a></li>
-                    <li><a href="services.php">Brands</a></li>
-                     <li><a href="booking.php">Book</a></li>
-                     <li><a href="orders.php">Orders</a></li>
-                     <li><a href="logout.php">Logout</a></li>
-		     	</ul>
-                
-			 <div class="clear"></div>
-			</div>	
-						
-		</div>	
-		
-		
-		<div class="clear"></div> 
-	   </div>
-	  </div>	
+            
+            <div class="cart">
+                <div>
+                    <h3> Welcome <?=$_SESSION['s_name'];?> !! </h3>
+                </div>
+            
+                <div class="menu-main">
+                    <ul class="dc_css3_menu">
+                        <li class="active"><a href="indexlogin.php">Home</a></li>
+                        <li><a href="services.php">Brands</a></li>
+                        <li><a href="booking.php">Book</a></li>
+                        <li><a href="orders.php">Orders</a></li>
+                        <li><a href="logout.php">Logout</a></li>
+                    </ul>
+                    
+                    <div class="clear"></div>
+                </div>  
+                        
+            </div>  
+            
+            
+            <div class="clear"></div> 
+        </div>
+    </div>  
 </div>
 <div class="header-bottom">
-	<div class="wrap">
-		<div class="page-not-found">
-			<div class="text-center">
-          <h2>Your order details
-          </h2>
-        </div>
+    <div class="wrap">
+        <div class="page-not-found">
+            <div class="text-center">
+                <h2>Your order details</h2>
+            </div>
       
-        <div class="container-fluid row">
+            <div class="container-fluid row">
+                <div class="col-md-3"></div>
           
-            <div class="col-md-3"></div>
-          
-      
-         
-         
-         
-          <div class="s">
-                 
-                 
-                  <table class="table table-bordered table-responsive table-striped table-hover table-condensed text-center " >
-                    <tr>
-                        <th class = "text-center">SALE ID</th>
-                        <th class = "text-center">CUSTOMER ID</th>
-                        <th class = "text-center">CAR  MODEL</th>
-                        <th class = "text-center">DATE-TIME-OF-BOOK</th>
-                        
-                       </tr>
-                              <?php
-                                    $db=mysqli_connect("localhost","root","","car_showroom");
-                                    $cname = $_SESSION["s_name"];
+                <div class="s">
+                    <table class="table table-bordered table-responsive table-striped table-hover table-condensed text-center ">
+                        <tr>
+                            <th class="text-center">SALE ID</th>
+                            <th class="text-center">CUSTOMER ID</th>
+                            <th class="text-center">CAR MODEL</th>
+                            <th class="text-center">DATE-TIME-OF-BOOK</th>
+                        </tr>
+                        <?php
+                            $db = pg_connect("host=localhost dbname=car_showroom user=postgres password=yourpassword");
+                            $cname = $_SESSION["s_name"];
 
-                                    // to get the customerid from his name  
-                                   $getuserid= mysqli_query($db, "SELECT c_id from customer where name = '".$cname."'");
-                                    $numrows =mysqli_num_rows($getuserid);
-                                    if($numrows !=0)
-                                    {
-                                        while($row=mysqli_fetch_assoc($getuserid))
+                            // to get the customerid from his name  
+                            $getuserid = pg_query($db, "SELECT c_id FROM customer WHERE name = '".$cname."'");
+                            $numrows = pg_num_rows($getuserid);
+                            if($numrows != 0) {
+                                while($row = pg_fetch_assoc($getuserid)) {
+                                    $dbuserid = $row['c_id'];
+                                }
+                            }
+
+                            //to get his orders    
+                            $getorders = pg_query($db, "SELECT * FROM sale2 WHERE customer_id = '".$dbuserid."'");
+                            $numrows3 =mysqli_num_rows($getorders);
+                            if($numrows3 !=0)
+                            {
+                                while($row3=mysqli_fetch_assoc($getorders))
+                                {
+                                                $dbsaleid=$row3['sale_id'];
+                                                 $dbcustomerid=$row3['customer_id'];
+                                                $carnumber =$row3['carmodel'];
+                                                $date=$row3['ordertime'];
+                                        
+                                      // get his car model name
+                                        $getusercarname = mysqli_query($db, "SELECT name from model where model = '".$carnumber."'");
+                                        $numrows2 =mysqli_num_rows($getusercarname);
+                                        if($numrows2 !=0)
                                         {
-                                            $dbuserid=$row['c_id'];
+                                            while($row2=mysqli_fetch_assoc($getusercarname))
+                                            {
+                                                $dbusercarname=$row2['name'];
+                                            }
                                         }
-                                    }
-                      
-                                    //to get his orders    
-                                    $getorders= mysqli_query($db, "SELECT * from sale2 where customer_id = '".$dbuserid."'");
-                                    $numrows3 =mysqli_num_rows($getorders);
-                                    if($numrows3 !=0)
-                                    {
-                                        while($row3=mysqli_fetch_assoc($getorders))
-                                        {
-                                                        $dbsaleid=$row3['sale_id'];
-                                                         $dbcustomerid=$row3['customer_id'];
-                                                        $carnumber =$row3['carmodel'];
-                                                        $date=$row3['ordertime'];
-                                                
-                                              // get his car model name
-                                                $getusercarname = mysqli_query($db, "SELECT name from model where model = '".$carnumber."'");
-                                                $numrows2 =mysqli_num_rows($getusercarname);
-                                                if($numrows2 !=0)
-                                                {
-                                                    while($row2=mysqli_fetch_assoc($getusercarname))
-                                                    {
-                                                        $dbusercarname=$row2['name'];
-                                                    }
-                                                }
 
-                                                        echo "<tr>" ;
-                                                            echo "<td>$dbsaleid</td>";
-                                                           echo "<td>$dbcustomerid</td>";
-                                                           echo "<td>$dbusercarname</td>";  
-                                                             echo "<td>$date</td>";
-                                                            echo" </tr>";
-                                        }
-                                    }
-                      else
-                      {
-                         $message = "You have no orders in your name yet ! !";
-                        echo "<script type='text/javascript'>alert('$message');</script>";
-                      }
-                                      
-                            ?>
-                   </table>
+                                                echo "<tr>" ;
+                                                    echo "<td>$dbsaleid</td>";
+                                                   echo "<td>$dbcustomerid</td>";
+                                                   echo "<td>$dbusercarname</td>";  
+                                                     echo "<td>$date</td>";
+                                                    echo" </tr>";
+                                }
+                            }
+              else
+              {
+                 $message = "You have no orders in your name yet ! !";
+                echo "<script type='text/javascript'>alert('$message');</script>";
+              }
+                              
+                    ?>
+           </table>
 
-          </div>
-          
-         
-          
-          
-          
-          
-          
-          
-            <div class="col-md-3"></div>
-        
-        </div>   
-		</div>
-	</div>
+  </div>
+  
+ 
+  
+  
+  
+  
+  
+  
+    <div class="col-md-3"></div>
+
+</div>   
+</div>
+</div>
 </div>
 
 
@@ -165,42 +148,43 @@ if(!isset($_SESSION["s_name"]))
 
 
 <div class="footer">
-	<div class="wrap">
-	   <div class="footer-top">				
-				<div class="col_1_of_5 span_1_of_5">
-					<div class="footer-grid twitts">
-					<h3>Our Company</h3>
-						<div class="f_menu">
-							 <ul>
-						          <li>This is a CAR selling dealer</li>
-						     	  <li>Please read our Terms and Conditions </li>
-						     </ul>
-						</div>
-				   </div>
-				</div>
-				
-				<div class="col_1_of_5 span_1_of_5">
-					<div class="footer-grid twitts">
-						<h3>Get in touch</h3>
-						<ul class="follow_icon">
-							<li><a href="#" style="opacity: 1;"><img src="images/follow_icon.png" alt=""></a></li>
-							<li><a href="#" style="opacity: 1;"><img src="images/follow_icon1.png" alt=""></a></li>
-							<li><a href="#" style="opacity: 1;"><img src="images/follow_icon2.png" alt=""></a></li>
-							<li><a href="#" style="opacity: 1;"><img src="images/follow_icon3.png" alt=""></a></li>
-							<li><a href="#" style="opacity: 1;"><img src="images/follow_icon4.png" alt=""></a></li>
-							<li><a href="#" style="opacity: 1;"><img src="images/follow_icon5.png" alt=""></a></li>
-						</ul>
-						<p>+91 7387409481 </p>
-						<span>support@autoexpress.com</span>
-					</div>
-				</div>
-				<div class="clear"></div>
-		</div>
-	</div>
+<div class="wrap">
+<div class="footer-top">				
+        <div class="col_1_of_5 span_1_of_5">
+            <div class="footer-grid twitts">
+            <h3>Our Company</h3>
+                <div class="f_menu">
+                     <ul>
+                          <li>This is a CAR selling dealer</li>
+                           <li>Please read our Terms and Conditions </li>
+                     </ul>
+                </div>
+           </div>
+        </div>
+        
+        <div class="col_1_of_5 span_1_of_5">
+            <div class="footer-grid twitts">
+                <h3>Get in touch</h3>
+                <ul class="follow_icon">
+                    <li><a href="#" style="opacity: 1;"><img src="images/follow_icon.png" alt=""></a></li>
+                    <li><a href="#" style="opacity: 1;"><img src="images/follow_icon1.png" alt=""></a></li>
+                    <li><a href="#" style="opacity: 1;"><img src="images/follow_icon2.png" alt=""></a></li>
+                    <li><a href="#" style="opacity: 1;"><img src="images/follow_icon3.png" alt=""></a></li>
+                    <li><a href="#" style="opacity: 1;"><img src="images/follow_icon4.png" alt=""></a></li>
+                    <li><a href="#" style="opacity: 1;"><img src="images/follow_icon5.png" alt=""></a></li>
+                </ul>
+                <p>+91 7387409481 </p>
+                <span>support@autoexpress.com</span>
+            </div>
+        </div>
+        <div class="clear"></div>
+</div>
+</div>
 </div>		
 
 </body>
 </html>
+
 
 
 

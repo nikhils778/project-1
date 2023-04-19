@@ -1,7 +1,13 @@
 <?php
-$db=mysqli_connect("localhost","root","","car_showroom");
-if(!$db)
-{
-	die("could not connect".mysqli_error());
+$host = "localhost";
+$port = "5432";
+$dbname = "car_showroom";
+$user = "postgres";
+$password = "postgres";
+
+$conn = pg_connect("host=$host port=$port dbname=$dbname user=$user password=$password");
+
+if(!$conn) {
+    die("Could not connect to database.");
 }
 ?>
